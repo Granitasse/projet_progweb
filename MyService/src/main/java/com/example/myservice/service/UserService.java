@@ -14,20 +14,19 @@ import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRoles().isEmpty()) user.getRoles().add("USER");
+        user.setAdmin(false);
         return userRepository.save(user);
-    }
-
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
     }
 
     public List<User> getAllUsers() {
@@ -36,13 +35,17 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.getUserByUsername(username)
+                                  .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String[] authorities;
+        if (user.isAdmin()) authorities = new String[]{"ADMIN"};
+        else authorities = new String[0];
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .authorities(user.getRoles().toArray(new String[0]))
-                .build();
+                                                                 .username(user.getUsername())
+                                                                 .password(user.getPassword())
+                                                                 .authorities(authorities)
+                                                                 .build();
     }
 }

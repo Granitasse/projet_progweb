@@ -1,6 +1,5 @@
 package com.example.myservice.security;
 
-import com.example.myservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,25 +16,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated();
-
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http.csrf().disable()
+                   .cors().disable()
+//                   .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                   .and()
+//                   .authorizeHttpRequests()
+//                   .requestMatchers("/auth/**").permitAll()
+//                   .anyRequest().authenticated()
+//                   .and()
+//                   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                   .build();
     }
 
     @Bean

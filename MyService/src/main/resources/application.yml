@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/database
+    password: admin
+    username: admin
+    hikari:
+      connection-timeout: 600000
+      initialization-fail-timeout: -1
+  jpa:
+    open-in-view: false
+    show-sql: true
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ALL
+
+progweb:
+  security:
+    private-key: "Bob"
+
+server:
+  port: 8090
