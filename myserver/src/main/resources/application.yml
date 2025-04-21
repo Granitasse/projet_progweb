@@ -17,6 +17,3 @@ progweb:
 logging:
   level:
     web: DEBUG
-
-server:
-  port: 8090
